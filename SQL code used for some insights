@@ -1,0 +1,312 @@
+﻿/*
+comments include immediate notes or information about the following queries
+*/ --all tables side by side
+
+
+SELECT '2017' AS YEAR,
+        B17.BIKE_ID,
+        B17.START_TIME,
+        B17.END_TIME,
+        B17.START_STATION_ID AS START_STATION_ID_2017,
+        B17.END_STATION_ID AS END_STATION_ID_2017,
+        B17.USER_TYPE AS USER_TYPE_2017,
+        B17.BIKE_SHARE_FOR_ALL_TRIP AS BIKE_SHARE_FOR_ALL_TRIP_2017,
+        '2018' AS YEAR,
+        B18.START_STATION_ID AS START_STATION_ID_2018,
+        B18.END_STATION_ID AS END_STATION_ID_2018,
+        B18.USER_TYPE AS USER_TYPE_2018,
+        B18.BIKE_SHARE_FOR_ALL_TRIP AS BIKE_SHARE_FOR_ALL_TRIP_2018,
+        '2019' AS YEAR,
+        B19.START_STATION_ID AS START_STATION_ID_2019,
+        B19.END_STATION_ID AS END_STATION_ID_2019,
+        B19.USER_TYPE AS USER_TYPE_2019,
+        B19.BIKE_SHARE_FOR_ALL_TRIP AS BIKE_SHARE_FOR_ALL_TRIP_2019
+FROM BAYWHEELS_2017 B17
+JOIN BAYWHEELS_2018 B18 ON B17.BIKE_ID = B18.BIKE_ID
+JOIN BAYWHEELS_2019 B19 ON B17.BIKE_ID = B19.BIKE_ID
+LIMIT 10000;
+
+
+----trends for 2017
+ --daily
+--October 26 most trips:4682
+--July 9 least trips: 433
+
+
+SELECT DATE(START_TIME) AS TRIP_DATE,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2017
+GROUP BY TRIP_DATE
+ORDER BY TRIP_COUNT
+LIMIT 1000;
+
+
+--monthly
+--October most trips: 108937
+--least trips June: 2689, July 44073
+
+
+SELECT TO_CHAR(START_TIME,
+
+
+                                                                'Month') AS TRIP_MONTH,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2017
+GROUP BY TO_CHAR(START_TIME,
+
+
+                                                                                'Month')
+ORDER BY MIN(EXTRACT(MONTH
+                                                                                                                                                                        FROM START_TIME))
+LIMIT 1000;
+
+
+--weekly
+
+
+SELECT TO_CHAR(START_TIME,
+
+
+                                                                'Month') AS TRIP_MONTH,
+        TO_CHAR(START_TIME,
+
+
+                'IW') AS TRIP_WEEK,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2017
+GROUP BY TO_CHAR(START_TIME,
+
+
+                                                                                'Month'),
+        TO_CHAR(START_TIME,
+
+
+                'IW')
+ORDER BY TRIP_COUNT DESC
+LIMIT 1000;
+
+
+--top routes
+
+
+SELECT START_STATION_ID,
+        END_STATION_ID,
+        COUNT(*) AS ROUTE_COUNT
+FROM BAYWHEELS_2017
+GROUP BY START_STATION_ID,
+        END_STATION_ID
+ORDER BY ROUTE_COUNT DESC
+LIMIT 10;
+
+
+---trends for 2018
+ --daily
+-- least trips November 23 527
+--most trips June 26: 8282, July 25: 8280
+
+
+SELECT DATE(START_TIME) AS TRIP_DATE,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2018
+GROUP BY TRIP_DATE
+ORDER BY TRIP_COUNT DESC
+LIMIT 1000;
+
+
+--monthly
+--most trips in October: 201458
+--least trips in January: 94802
+
+
+SELECT TO_CHAR(START_TIME,
+
+
+                                                                'Month') AS TRIP_MONTH,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2018
+GROUP BY TO_CHAR(START_TIME,
+
+
+                                                                                'Month')
+ORDER BY TRIP_COUNT
+LIMIT 1000;
+
+
+--weekly
+
+
+SELECT TO_CHAR(START_TIME,
+
+
+                                                                'Month') AS TRIP_MONTH,
+        TO_CHAR(START_TIME,
+
+
+                'IW') AS TRIP_WEEK,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2018
+GROUP BY TO_CHAR(START_TIME,
+
+
+                                                                                'Month'),
+        TO_CHAR(START_TIME,
+
+
+                'IW')
+ORDER BY MIN(START_TIME)
+LIMIT 1000;
+
+
+--top routes taken
+
+
+SELECT START_STATION_ID,
+        END_STATION_ID,
+        COUNT(*) AS ROUTE_COUNT
+FROM BAYWHEELS_2018
+GROUP BY START_STATION_ID,
+        END_STATION_ID
+ORDER BY ROUTE_COUNT DESC
+LIMIT 10;
+
+
+----trends for 2019
+ --daily
+-- most trips July 24:13395
+--least trips January 6: 678, November 30:1080
+
+
+SELECT DATE(START_TIME) AS TRIP_DATE,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2019
+GROUP BY TRIP_DATE
+ORDER BY TRIP_COUNT DESC
+LIMIT 1000;
+
+
+--monthly
+--least trips December: 150102
+--most trips July: 258102
+
+
+SELECT TO_CHAR(START_TIME,
+
+
+                                                                'Month') AS TRIP_MONTH,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2019
+GROUP BY TO_CHAR(START_TIME,
+
+
+                                                                                'Month')
+ORDER BY TRIP_COUNT
+LIMIT 1000;
+
+
+--weekly
+
+
+SELECT TO_CHAR(START_TIME,
+
+
+                                                                'Month') AS TRIP_MONTH,
+        TO_CHAR(START_TIME,
+
+
+                'IW') AS TRIP_WEEK,
+        COUNT(*) AS TRIP_COUNT
+FROM BAYWHEELS_2019
+GROUP BY TO_CHAR(START_TIME,
+
+
+                                                                                'Month'),
+        TO_CHAR(START_TIME,
+
+
+                'IW')
+ORDER BY MIN(START_TIME)
+LIMIT 1000;
+
+
+--top routes
+
+
+SELECT START_STATION_ID,
+        END_STATION_ID,
+        COUNT(*) AS ROUTE_COUNT
+FROM BAYWHEELS_2019
+GROUP BY START_STATION_ID,
+        END_STATION_ID
+ORDER BY ROUTE_COUNT DESC
+LIMIT 10;
+
+
+--most popular stations by total rides
+--2017: station id: 15, San Francisco Ferry Building (Harry Bridges Plaza), 15187 rides
+--2018: station id: 15, San Francisco Ferry Building (Harry Bridges Plaza), 38461 rides
+--2019: station id: 58, Market St at 10th St, 45058 rides
+
+
+SELECT BS.ID AS STATION_ID,
+        BS.NAME AS STATION_NAME,
+        EXTRACT(YEAR
+                                                                        FROM START_TIME) AS YEAR,
+        COUNT(*) AS TOTAL_RIDES
+FROM BAYWHEELS_STATIONS BS
+JOIN
+        (SELECT START_STATION_ID,
+                        START_TIME
+                FROM BAYWHEELS_2017
+                UNION ALL SELECT START_STATION_ID,
+                        START_TIME
+                FROM BAYWHEELS_2018
+                UNION ALL SELECT START_STATION_ID,
+                        START_TIME
+                FROM BAYWHEELS_2019) AS TRIPS ON BS.ID = TRIPS.START_STATION_ID
+GROUP BY BS.ID,
+        BS.NAME,
+        YEAR
+ORDER BY YEAR,
+        TOTAL_RIDES DESC;
+
+
+--876454 customers
+--4013950 subscribers
+
+
+SELECT USER_TYPE,
+        COUNT(*) AS USER_COUNT
+FROM
+        (SELECT USER_TYPE
+                FROM BAYWHEELS_2017
+                UNION ALL SELECT USER_TYPE
+                FROM BAYWHEELS_2018
+                UNION ALL SELECT USER_TYPE
+                FROM BAYWHEELS_2019) AS USERS
+GROUP BY USER_TYPE;
+
+
+--trip durations
+--long: 78329
+--medium: 171620
+--short: 4640455
+
+
+SELECT CASE
+                                                                                        WHEN TRIP_DURATION < 30 THEN 'Short'
+                                                                                        WHEN TRIP_DURATION >= 30
+                                                                                                                                AND TRIP_DURATION < 60 THEN 'Medium'
+                                                                                        ELSE 'Long'
+                                                        END AS TRIP_DURATION_SEGMENT,
+        COUNT(*) AS USER_COUNT
+FROM
+        (SELECT EXTRACT(EPOCH
+                                                                                                                                        FROM (END_TIME - START_TIME)) / 60 AS TRIP_DURATION
+                FROM BAYWHEELS_2017
+                UNION ALL SELECT EXTRACT(EPOCH
+                                                                                                                                                                                                                        FROM (END_TIME - START_TIME)) / 60 AS TRIP_DURATION
+                FROM BAYWHEELS_2018
+                UNION ALL SELECT EXTRACT(EPOCH
+                                                                                                                                                                                                                        FROM (END_TIME - START_TIME)) / 60 AS TRIP_DURATION
+                FROM BAYWHEELS_2019) AS TRIPS
+GROUP BY TRIP_DURATION_SEGMENT;
